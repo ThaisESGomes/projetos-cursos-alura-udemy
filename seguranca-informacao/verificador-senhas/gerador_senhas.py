@@ -6,9 +6,11 @@ Gerador de Senhas
 Módulo para gerar senhas seguras
 """
 
-import random
+from secrets import SystemRandom
 import string
 import secrets
+
+rng = SystemRandom()
 
 class GeradorSenhas:
     def __init__(self):
@@ -59,37 +61,37 @@ class GeradorSenhas:
             caracteres.append(secrets.choice(todos_caracteres))
         
         # Embaralhar os caracteres
-        random.shuffle(caracteres)
+        rng.shuffle(caracteres)
         
         return ''.join(caracteres)
     
     def gerar_senha_memoravel(self, num_palavras=3, incluir_numeros=True, incluir_especiais=True):
         """Gera uma senha memorável usando palavras"""
-        palavras = random.sample(self.palavras_base, num_palavras)
+        palavras = rng.sample(self.palavras_base, num_palavras)
         
         # Modificar algumas palavras
         for i in range(len(palavras)):
             palavra = palavras[i]
             
             # Algumas modificações aleatórias
-            if random.choice([True, False]):
+            if rng.choice([True, False]):
                 palavra = palavra.upper()
             
-            if incluir_numeros and random.choice([True, False]):
-                palavra += str(random.randint(0, 99))
+            if incluir_numeros and rng.choice([True, False]):
+                palavra += str(rng.randint(0, 99))
             
             palavras[i] = palavra
         
         # Conectar palavras
         conectores = ['-', '_', '.'] if incluir_especiais else ['']
-        conector = random.choice(conectores)
+        conector = rng.choice(conectores)
         
         senha = conector.join(palavras)
         
         # Adicionar caracteres especiais no final se solicitado
         if incluir_especiais:
-            senha += random.choice(self.especiais)
-            senha += str(random.randint(10, 99))
+            senha += rng.choice(self.especiais)
+            senha += str(rng.randint(10, 99))
         
         return senha
     
@@ -103,17 +105,17 @@ class GeradorSenhas:
     
     def gerar_passphrase(self, num_palavras=4, separador='-'):
         """Gera uma passphrase usando palavras aleatórias"""
-        palavras = random.sample(self.palavras_base, num_palavras)
+        palavras = rng.sample(self.palavras_base, num_palavras)
         
         # Adicionar números aleatórios
         for i in range(len(palavras)):
-            if random.choice([True, False]):
-                palavras[i] += str(random.randint(1, 999))
+            if rng.choice([True, False]):
+                palavras[i] += str(rng.randint(1, 999))
         
         return separador.join(palavras)
     
     def validar_entropia(self, senha):
-        """Calcula a entropia aproximada da senha"""
+        """Estimativa idealizada; não mede a força real de senhas humanas ou passphrases"""
         charset_size = 0
         
         if any(c in self.letras_minusculas for c in senha):
